@@ -1,7 +1,7 @@
 # This sciprt file contains a frame for learning handwritten digitals from the MNIST dataset
 
 # load training data from files
-data <- loadMNISTData("C:\\Users\\User\\YandexDisk\\teaching\\advanced_topics_in_machine_learning\\train-images.idx3-ubyte", "C:\\Users\\User\\YandexDisk\\teaching\\advanced_topics_in_machine_learning\\train-labels.idx1-ubyte")
+data <- loadMNISTData("./exdb/train-images.idx3-ubyte", "./exdb/train-labels.idx1-ubyte")
 trainLabels <- data$labels
 trainData <- data$data
 
@@ -11,9 +11,9 @@ print(dim(trainLabels))
 # trainingLabels should have 60000x1, one class label \in {0,1,...9} for each data.
 
 #uncomment the following 3 lines to see the nth training example and its class label.
-# n = 10;
-# image( t(matrix(trainData[n, ], ncol=28, nrow=28)), Rowv=28, Colv=28, col = heat.colors(256),  margins=c(5,10))
-# print("Class label:"); print(trainLabels[n])
+ n = 103;
+ image( (matrix(trainData[n, ], ncol=28, nrow=28)), Rowv=28, Colv=28, col = heat.colors(256),  margins=c(5,10))
+ print("Class label:"); print(trainLabels[n])
 
 # train a model
 classifier <- learnModel(data = trainData, labels = trainLabels)
@@ -28,7 +28,7 @@ print(sum(predictedLabels == trainLabels)/length(trainLabels))
 
 
 # test the model
-data <- loadMNISTData("C:\\Users\\User\\YandexDisk\\teaching\\advanced_topics_in_machine_learning\\t10k-images.idx3-ubyte", "C:\\Users\\User\\YandexDisk\\teaching\\advanced_topics_in_machine_learning\\t10k-labels.idx1-ubyte")
+data <- loadMNISTData("./exdb/t10k-images.idx3-ubyte", "./exdb/t10k-labels.idx1-ubyte")
 testLabels <- data$labels
 testData <- data$data
 
