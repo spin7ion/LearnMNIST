@@ -50,14 +50,13 @@ X1Size <- nrow(X1)
 moreThanZero <- function(z){
   return(min(max(0,sign(z)),1))
 }
+lambda <- 0  # regularization of trade-off.
 
 ### Create cost function
 JwithReg <- function(theta)
 {
-  lambda <- 0.0  # regularization of trade-off.
-  mu <- 0.1 # learning rate
   hyperplane<-X1%*%theta
-  J <- -(1/mu)*sum( ybinary*moreThanZero(1-hyperplane)+(1-ybinary)*(hyperplane+1) )+(lambda/mu) * sum(theta^2)
+  J <- -(1/X1Size)*sum( ybinary*moreThanZero(1-hyperplane)+(1-ybinary)*(hyperplane+1) )+(lambda/X1Size) * sum(theta^2)
   return(J)
 }
 
@@ -81,5 +80,5 @@ cat("Theta Optim Cost: ", cost_theta_optim)
 delta_cost <- cost_theta_optim - cost_theta;
 cat("Delta Cost: ", delta_cost)
 ### TEST ON some data
-sign(theta_par%*%c(1,xbinary[12660,]))
+sign(theta_par%*%X1[10,])
 sign(theta_par%*%c(1,xbinary[10,]))
