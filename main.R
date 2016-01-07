@@ -99,6 +99,8 @@ testLabelsBinary <- c(testLabelsZero,testLabelsOne)
 #Add ones
 Z1 <- cbind(rep(1,nrow(zBinary)),zBinary)
 
+predictedLabels <- abs(sign(Z1%*%theta_par-0.05)-1)/2
+
 #We define a function to evaluate the accuracy of our classifier
 binary_classifier_accuracy <- function(theta, X,y){
   correct <- sum(y == abs(sign(X%*%theta-0.05)-1)/2)
@@ -106,9 +108,30 @@ binary_classifier_accuracy <- function(theta, X,y){
   return(accuracy)
 }
 
+
+  
 ###Check accuracy of classifier
 bca_train <- binary_classifier_accuracy(theta_par, X1, ybinary)
 cat("Accuracy on training data: ", bca_train*100,"%")
 
 bca_train <- binary_classifier_accuracy(theta_par, Z1, testLabelsBinary)
 cat("Accuracy on test data: ", bca_train*100,"%")
+
+TP <- sum((testLabelsBinary == 1) * (predictedLabels == 1))  # True Positive
+TN <- sum((testLabelsBinary == 0) * (predictedLabels == 0))  # True Negative
+FP <- sum((testLabelsBinary == 0) * (predictedLabels == 1))  # False Positive
+FN <- sum((testLabelsBinary == 1) * (predictedLabels == 0))  # False Negative
+
+accuracy <- (TP + TN) / (TP + TN + FP + FN)
+precision <- TP / (TP + FP)
+recall <- TP / (TP + FN)
+specificity <- TN / (TN + FN)
+fmeasure <- 2 * TP / (2 * TP + FN + FP)
+FDR <- FP / (FP + TP)
+
+cat("Accuracy: ", accuracy)
+cat("Precision: ", precision)
+cat("Recall: ", recall)
+cat("Specificity: ", specificity)
+cat("Fmeasure: ", fmeasure)
+cat("FDR: ", FDR)
