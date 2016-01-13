@@ -50,19 +50,49 @@ X1Size <- nrow(X1)
 moreThanZero <- function(z){
   return(min(max(0,sign(z)),1))
 }
-lambda <- 0  # regularization of trade-off.
 
 ### Create cost function
 JwithReg <- function(theta)
 {
   hyperplane<-X1%*%theta
-  J <- -(1/X1Size)*sum( ybinary*moreThanZero(1-hyperplane)+(1-ybinary)*(hyperplane+1) )+(lambda/X1Size) * sum(theta^2)
+  J <- -(1/X1Size)*sum( ybinary*moreThanZero(1-hyperplane)+(1-ybinary)*(hyperplane+1) )
   return(J)
 }
 
+
+
+### Create cost function
+dJwithReg <- function(theta)
+{
+  hyperplane<-X1%*%theta
+  dJ <- -(1/X1Size)*sum( -X1*ybinary*moreThanZero(1-hyperplane)+(1-ybinary)*X1*moreThanZero(1+hyperplane) )
+  return(dJ)
+}
+
+grad.descent <- function(theta, maxit){
+  alpha = .05 # set learning rate
+  for (i in 1:maxit) {
+    theta <- theta - alpha * dJwithReg(theta)  
+  }
+  return(theta)
+}
+
+GradDesc <- function(theta){
+  #Gradient descent
+  repeat{
+    gradFunc <- dJwithReg(theta)
+    theta <- theta - 0.05 * gradFunc
+    cat(sum((initial_theta - theta)^2))
+    cat("\n")
+    if(sum((initial_theta - theta)^2) < 0.01){
+      return(theta)
+    }
+  }
+  return(theta)
+}
 #We define an initial theta as a very small randomized value
 initial_theta <- rep(runif(1,0,1)*0.001,ncol(X1))
-
+GradDesc(initial_theta)
 #Cost at inital theta
 cost_theta <- JwithReg(initial_theta)
 cat("Cost theta: ", cost_theta)
