@@ -56,8 +56,8 @@ yeight <- Y[Y==8]
 ynine <- Y[Y==9]
 
 #We will now concatenate both matrices so we can feed them into our classifier
-xbinary <- rbind(xzero, xnine)
-ybinary <- c(yzero,ynine)
+xbinary <- rbind(xeight, xthree)
+ybinary <- sign(c(yeight,ythree))
 
 #Add ones to our X to vectorize and act as intercept terms
 X1 <- cbind(rep(1,nrow(xbinary)),xbinary)#1 is inserted because of theta0
@@ -91,36 +91,22 @@ dJwithReg <- function(theta)
 
 grad.descent <- function(theta, maxit){
   alpha = .05 # set learning rate
-  maxit = 100
+  maxit = 200
   for (i in 1:maxit) {
     cost_theta <- JwithReg(theta)
-    cat("Cost theta: ", cost_theta)
+    cat("iteration:",i,"Cost theta: ", cost_theta)
     theta <- theta - alpha * dJwithReg(theta)  
     cat("\n")
   }
   return(theta)
 }
 
-GradDesc <- function(theta){
-  #Gradient descent
-  repeat{
-    gradFunc <- dJwithReg(theta)
-    theta <- theta - 0.05 * gradFunc
-    cat(sum((initial_theta - theta)^2))
-    cat("\n")
-    if(sum((initial_theta - theta)^2) < 0.01){
-      return(theta)
-    }
-  }
-  return(theta)
-}
 #We define an initial theta as a very small randomized value
 #initial_theta <- rep(runif(1,0,1)*0.001,ncol(X1))
 initial_theta <-runif(ncol(X1), min = -1, max = 1)
-#GradDesc(initial_theta)
 theta_par <-grad.descent(initial_theta)
 #Cost at inital theta
-cost_theta <- JwithReg(initial_theta)
+cost_theta <- JwithReg(theta_par)
 cat("Cost theta: ", cost_theta)
 
 # We derive the theta using gradient descent with the built-in optim function from R
@@ -129,17 +115,18 @@ cat("Cost theta: ", cost_theta)
 #theta_par <- theta_optim$par
 
 #Cost at optimal value of the theta
-cost_theta_optim <- theta_optim$value
-cat("Theta Optim Cost: ", cost_theta_optim)
+#cost_theta_optim <- theta_optim$value
+#cat("Theta Optim Cost: ", cost_theta_optim)
 
 #We evaluate the delta in cost
-delta_cost <- cost_theta_optim - cost_theta;
-cat("Delta Cost: ", delta_cost)
+#delta_cost <- cost_theta_optim - cost_theta;
+#cat("Delta Cost: ", delta_cost)
 ### TEST ON some data
 
-abs(sign(theta_par%*%c(1,xzero[2,])-0.05)-1)/2#strange magic to set 0-> zero class 1->one class
+max(0,sign(theta_par%*%c(1,xzero[1,])))
 
-abs(sign(theta_par%*%c(1,xtwo[10,])-0.05)-1)/2
+max(0,sign(theta_par%*%c(1,xnine[22,])))
+
 
 ### Prepare test data
 #normalize
@@ -168,16 +155,17 @@ testLabelsSeven <- testLabels[testLabels==7]
 testLabelsEight <- testLabels[testLabels==8]
 testLabelsNine <- testLabels[testLabels==9]
 #Concatenate to feed classifier
-zBinary <- rbind(zzero, znine)
-testLabelsBinary <- c(testLabelsZero,testLabelsNine)
+zBinary <- rbind(zeight, zthree)
+testLabelsBinary <- sign(c(testLabelsEight,testLabelsThree))
 #Add ones
 Z1 <- cbind(rep(1,nrow(zBinary)),zBinary)
 
-predictedLabels <- abs(sign(Z1%*%theta_par)-1)/2
+predictedLabels <- pmax(0,sign(Z1%*%theta_par))
 
 #We define a function to evaluate the accuracy of our classifier
 binary_classifier_accuracy <- function(theta, X,y){
-  correct <- sum(y == abs(sign(X%*%theta))/2)
+  #sign(theta_par%*%c(1,xnine[12,]))
+  correct <- sum( y == max(0,sign(X%*%theta)) )
   
   accuracy <- correct / length(y)
   return(accuracy)
