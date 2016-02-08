@@ -120,13 +120,20 @@ predictLabel<-function(xtest,theta_pars_list){
 }
 predictLabel(c(1,xone[4,]),trainedThetaPars)
 
-X1 <- cbind(rep(1,nrow(X)),X)
+### Prepare test data
+#normalize
+testDataNormalized<-testData/pixelMax
+Z <- as.matrix(testDataNormalized)
+Z1 <- cbind(rep(1,nrow(Z)),Z)
 
-costs<-X1%*%trainedThetaPars[[1]]
+#X1 <- cbind(rep(1,nrow(X)),X)
+
+#costs<-X1%*%trainedThetaPars[[1]]
+costs<-Z1%*%trainedThetaPars[[1]]
 predictedLabels<-rep(0,nrow(costs));
-doNotCount<-0
+doNotCount<--1
 for(i in 0:9) {
-  currentCosts<-X1%*%trainedThetaPars[[i+1]]
+  currentCosts<-Z1%*%trainedThetaPars[[i+1]]
   for(j in 1:nrow(costs)){
     if(costs[j]<currentCosts[j] && i!=doNotCount){
       costs[j]<-currentCosts[j]
@@ -139,13 +146,13 @@ successfulPredicts<-0
 totalPredicts<-0
 
 
-for(i in 1:60000){
-  if(predictedLabels[i]==Y[i] && Y[i]!=doNotCount){
+for(i in 1:10000){
+  if(predictedLabels[i]==testLabels[i]){
     successfulPredicts<-successfulPredicts+1
   }  
-  if(Y[i]!=doNotCount){
+  #if(trainLabels[i]!=doNotCount){
     totalPredicts<-totalPredicts+1
-  }
+  #}
 }
 
 cat("predicted:",100*successfulPredicts/totalPredicts,"%")
