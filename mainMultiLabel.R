@@ -103,3 +103,10 @@ predictedLabels<-max.col(Z1%*%trainedThetaPars)-1 #subtract 1 because we have 0:
 
 cat("predicted:",100*sum(predictedLabels==testLabels)/nrow(testLabels),"%")
 
+predictMatrix<-matrix(0,10,10)
+
+for(i in 1:nrow(testLabels)){
+  predictMatrix[[ predictedLabels[[i]]+1,testLabels[[i]]+1 ]]<-predictMatrix[[ predictedLabels[[i]]+1,testLabels[[i]]+1 ]]+1
+}
+View(predictMatrix)
+
